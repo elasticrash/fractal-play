@@ -61,11 +61,9 @@ export class AppComponent implements AfterViewInit {
         }
 
         if (iteration === maxIteration) {
-          ctx.fillStyle = '#000000';
-          ctx.fillRect(i, j, i + 1, j + 1);
+          this.render('#000000', i, j, ctx).then();
         } else {
-          ctx.fillStyle = this.fullColorHex(iteration);
-          ctx.fillRect(i, j, i + 1, j + 1);
+          this.render(this.fullColorHex(iteration), i, j, ctx).then();
         }
       }
     }
@@ -87,5 +85,13 @@ export class AppComponent implements AfterViewInit {
     const green = this.rgbToHex(finalValue);
     const blue = this.rgbToHex(finalValue);
     return '#' + red + green + blue;
+  }
+
+  private async render(color: string, i, j, ctx: any) {
+    return new Promise((resolve, reject) => {
+      ctx.fillStyle = color;
+      ctx.fillRect(i, j, i + 1, j + 1);
+      resolve(true);
+    });
   }
 }
