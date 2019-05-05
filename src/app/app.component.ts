@@ -46,31 +46,38 @@ export class AppComponent implements AfterViewInit {
 
   private execute() {
     const ctx = this.fractal.nativeElement.getContext('2d');
-
     const scaleX = this.width / this.canvasWidth;
     const scaleY = this.height / this.canvasHeight;
 
     for (let i = 0; i < this.canvasWidth; i++) {
-      for (let j = 0; j < this.canvasHeight; j++) {
-        let iteration = 0;
-        let zx = i * scaleX - this.offsetX;
-        let zy = j * scaleY - this.offsetY;
-        const cx = i * scaleX - this.offsetX;
-        const cy = j * scaleY - this.offsetY;
+      setTimeout(() => {
+        for (let j = 0; j < this.canvasHeight; j++) {
+          let iteration = 0;
+          let zx = i * scaleX - this.offsetX;
+          let zy = j * scaleY - this.offsetY;
+          const cx = i * scaleX - this.offsetX;
+          const cy = j * scaleY - this.offsetY;
 
-        while (zx * zx + zy * zy < 4 && iteration < this.maxIteration) {
-          const xtemp = zx * zx - zy * zy;
-          zy = 2 * zx * zy + cy;
-          zx = xtemp + cx;
-          iteration++;
-        }
+          while (zx * zx + zy * zy < 4 && iteration < this.maxIteration) {
+            const xtemp = zx * zx - zy * zy;
+            zy = 2 * zx * zy + cy;
+            zx = xtemp + cx;
+            iteration++;
+          }
 
-        if (iteration === this.maxIteration) {
-          this.render('#000000', i, j, ctx).then();
-        } else {
-          this.render(this.fullColorHex(iteration), i, j, ctx).then();
+          if (i % 100 === 0 && j % 100 === 0) {
+            window.requestAnimationFrame(() => {
+              console.log('frame');
+            });
+          }
+
+          if (iteration === this.maxIteration) {
+            this.render('#000000', i, j, ctx);
+          } else {
+            this.render(this.fullColorHex(iteration), i, j, ctx);
+          }
         }
-      }
+      }, 1);
     }
   }
 
@@ -92,11 +99,8 @@ export class AppComponent implements AfterViewInit {
     return '#' + red + green + blue;
   }
 
-  private async render(color: string, i, j, ctx: any) {
-    return new Promise((resolve, reject) => {
-      ctx.fillStyle = color;
-      ctx.fillRect(i, j, i + 1, j + 1);
-      resolve(true);
-    });
+  private render(color: string, i, j, ctx: any) {
+    ctx.fillStyle = color;
+    ctx.fillRect(i, j, i + 1, j + 1);
   }
 }
