@@ -33,7 +33,7 @@ export class AppComponent implements AfterViewInit {
     this.height = this.height / 2;
 
     this.offsetX = Math.abs(clickedX - (this.offsetX / 2));
-    this.offsetY =  Math.abs(clickedY - (this.offsetY / 2));
+    this.offsetY = Math.abs(clickedY - (this.offsetY / 2));
 
     this.execute();
   }
@@ -64,10 +64,28 @@ export class AppComponent implements AfterViewInit {
           ctx.fillStyle = '#000000';
           ctx.fillRect(i, j, i + 1, j + 1);
         } else {
-          ctx.fillStyle = '#D7' + iteration;
+          ctx.fillStyle = this.fullColorHex(iteration);
           ctx.fillRect(i, j, i + 1, j + 1);
         }
       }
     }
+  }
+
+  private rgbToHex(rgb) {
+    let hex = Number(rgb).toString(16);
+    if (hex.length < 2) {
+      hex = '0' + hex;
+    }
+    return hex;
+  }
+
+  private fullColorHex(g) {
+    const overflowTimes = Math.floor(g / 255);
+    const finalValue = g - (255 * overflowTimes);
+
+    const red = this.rgbToHex(finalValue);
+    const green = this.rgbToHex(finalValue);
+    const blue = this.rgbToHex(finalValue);
+    return '#' + red + green + blue;
   }
 }
