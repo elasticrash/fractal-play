@@ -11,56 +11,61 @@ export class AppComponent implements AfterViewInit {
   @ViewChild('fractal') fractal: ElementRef;
   public width = 3.5;
   public height = 2;
-  public canvasWidth = 875;
-  public canvasHeight = 500;
+  public canvasWidth = 1750;
+  public canvasHeight = 1000;
   public offsetX = 2.5;
   public offsetY = 1;
+  public fractalPositionLeft: number;
+  public fractalPositionTop: number;
+  public maxIteration = 255;
 
   ngAfterViewInit(): void {
+    this.fractalPositionLeft = this.fractal.nativeElement.offsetLeft;
+    this.fractalPositionTop = this.fractal.nativeElement.offsetTop;
     this.execute();
   }
 
   public doubleup(e) {
-    console.log(e);
+    const x = e.pageX - this.fractalPositionLeft;
+    const y = e.pageY - this.fractalPositionTop;
 
     const scaleX = this.width / this.canvasWidth;
     const scaleY = this.height / this.canvasHeight;
 
-    const clickedX = e.x * scaleX - this.offsetX;
-    const clickedY = e.y * scaleY - this.offsetY;
+    const clickedX = x * scaleX - this.offsetX;
+    const clickedY = y * scaleY - this.offsetY;
 
     this.width = this.width / 2;
     this.height = this.height / 2;
 
-    this.offsetX = Math.abs(clickedX - (this.offsetX / 2));
-    this.offsetY = Math.abs(clickedY - (this.offsetY / 2));
+    this.offsetX = -(clickedX - (this.width / 2));
+    this.offsetY = -(clickedY - (this.height / 2));
 
     this.execute();
   }
 
   private execute() {
     const ctx = this.fractal.nativeElement.getContext('2d');
-    const maxIteration = 1000;
 
     const scaleX = this.width / this.canvasWidth;
     const scaleY = this.height / this.canvasHeight;
 
     for (let i = 0; i < this.canvasWidth; i++) {
-      for (let j = 0; j < 500; j++) {
+      for (let j = 0; j < this.canvasHeight; j++) {
         let iteration = 0;
         let zx = i * scaleX - this.offsetX;
         let zy = j * scaleY - this.offsetY;
         const cx = i * scaleX - this.offsetX;
         const cy = j * scaleY - this.offsetY;
 
-        while (zx * zx + zy * zy < 4 && iteration < maxIteration) {
+        while (zx * zx + zy * zy < 4 && iteration < this.maxIteration) {
           const xtemp = zx * zx - zy * zy;
           zy = 2 * zx * zy + cy;
           zx = xtemp + cx;
           iteration++;
         }
 
-        if (iteration === maxIteration) {
+        if (iteration === this.maxIteration) {
           this.render('#000000', i, j, ctx).then();
         } else {
           this.render(this.fullColorHex(iteration), i, j, ctx).then();
